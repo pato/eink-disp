@@ -31,7 +31,8 @@ impl EinkDisplay {
     pub fn new() -> Self {
         let mut disp = Display4in2::default();
         disp.set_rotation(DisplayRotation::Rotate0);
-        disp.clear_buffer(Color::White);
+        disp.clear(White).unwrap();
+        // disp.clear_buffer(Color::White);
         Self { disp }
     }
 
@@ -41,6 +42,10 @@ impl EinkDisplay {
 
     pub fn as_ppm() -> String {
         todo!()
+    }
+
+    pub fn clear(&mut self) {
+        self.disp.clear(Black).unwrap();
     }
 
     pub fn save_ppm_file(&self, file_name: &str) -> io::Result<()> {
@@ -93,6 +98,7 @@ mod tests {
     fn it_works() {
         let mut display = EinkDisplay::default();
         display.draw_text("Hello rust!", 175, 250);
+        display.clear();
 
         display
             .save_ppm_file("/tmp/eink.ppm")

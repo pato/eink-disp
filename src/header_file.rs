@@ -1,6 +1,6 @@
 use std::io::{self, Write};
 
-const START_LINE: &[u8] = "const unsigned char gImage_alberteinstein[15000] = {\n".as_bytes();
+const START_LINE: &[u8] = "const unsigned char gImage_rust[15000] = {\n".as_bytes();
 const END_LINE: &[u8] = "};\n".as_bytes();
 
 const NEW_LINE: &[u8] = "\n".as_bytes();
