@@ -26,7 +26,7 @@ fn write_ppm_header(width: usize, height: usize, writer: &mut impl Write) -> io:
     Ok(written)
 }
 
-pub fn write_buffer(
+pub fn write_ppm_buffer(
     width: usize,
     height: usize,
     buf: &[u8],

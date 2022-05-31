@@ -15,8 +15,10 @@ use epd_waveshare::{
     graphics::DisplayRotation,
     prelude::*,
 };
-use ppm::write_buffer;
+use header_file::write_header_buffer;
+use ppm::write_ppm_buffer;
 
+mod header_file;
 mod ppm;
 
 /// Based on the GDEW042T2 e-Paper from Dalian Good Display Co., Ltd.: www.good-display.com
@@ -41,14 +43,29 @@ impl EinkDisplay {
         todo!()
     }
 
-    pub fn save_to_file(&self, file_name: &str) -> io::Result<()> {
+    pub fn save_ppm_file(&self, file_name: &str) -> io::Result<()> {
         // create the output file
         let file = File::create(file_name)?;
         // let's avoid a syscall per write and buffer our writes
         let buffer_size = 1 * 1024 * 1024; // 1 MB at a time
         let mut writer = BufWriter::with_capacity(buffer_size, file);
 
-        write_buffer(141, 106, self.disp.buffer(), &mut writer)?;
+        // it's actually 400/300 but the display buffer is only 15,000 (400 * 300 / 8) so i
+        // approximate it by diving height and width by sqrt(8)
+        write_ppm_buffer(141, 106, self.disp.buffer(), &mut writer)?;
+        writer.flush()?;
+
+        Ok(())
+    }
+
+    pub fn save_header_file(&self, file_name: &str) -> io::Result<()> {
+        // create the output file
+        let file = File::create(file_name)?;
+        // let's avoid a syscall per write and buffer our writes
+        let buffer_size = 1 * 1024 * 1024; // 1 MB at a time
+        let mut writer = BufWriter::with_capacity(buffer_size, file);
+
+        write_header_buffer(self.disp.buffer(), &mut writer)?;
         writer.flush()?;
 
         Ok(())
@@ -78,7 +95,10 @@ mod tests {
         display.draw_text("Hello rust!", 175, 250);
 
         display
-            .save_to_file("/tmp/eink.ppm")
+            .save_ppm_file("/tmp/eink.ppm")
+            .expect("failed to render");
+        display
+            .save_header_file("/tmp/eink.h")
             .expect("failed to render");
     }
 }
