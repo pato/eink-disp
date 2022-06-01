@@ -76,7 +76,7 @@ pub fn small_u32_as_utf8(val: u32) -> SmallVec<[u8; 8]> {
 #[inline(always)]
 pub fn pixel_as_utf8(pixel: u8) -> SmallVec<[u8; 16]> {
     let r = pixel as u32;
-    let r = 255 - r; // flip it because the e-reader has 0xFF as black
+    // let r = 255 - r; // flip it because the e-reader has 0xFF as black
     let g = r;
     let b = r;
 

@@ -97,8 +97,8 @@ mod tests {
     #[test]
     fn it_works() {
         let mut display = EinkDisplay::default();
-        display.draw_text("Hello rust!", 175, 250);
         display.clear();
+        display.draw_text("Hello rust!", 175, 250);
 
         display
             .save_ppm_file("/tmp/eink.ppm")
