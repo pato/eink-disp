@@ -40,27 +40,8 @@ impl EinkDisplay {
         format!("todo")
     }
 
-    pub fn as_ppm() -> String {
-        todo!()
-    }
-
     pub fn clear(&mut self) {
         self.disp.clear(Black).unwrap();
-    }
-
-    pub fn save_ppm_file(&self, file_name: &str) -> io::Result<()> {
-        // create the output file
-        let file = File::create(file_name)?;
-        // let's avoid a syscall per write and buffer our writes
-        let buffer_size = 1 * 1024 * 1024; // 1 MB at a time
-        let mut writer = BufWriter::with_capacity(buffer_size, file);
-
-        // it's actually 400/300 but the display buffer is only 15,000 (400 * 300 / 8) so i
-        // approximate it by diving height and width by sqrt(8)
-        write_ppm_buffer(141, 106, self.disp.buffer(), &mut writer)?;
-        writer.flush()?;
-
-        Ok(())
     }
 
     pub fn save_header_file(&self, file_name: &str) -> io::Result<()> {
@@ -98,11 +79,7 @@ mod tests {
     fn it_works() {
         let mut display = EinkDisplay::default();
         display.clear();
-        display.draw_text("Hello rust!", 175, 250);
 
-        display
-            .save_ppm_file("/tmp/eink.ppm")
-            .expect("failed to render");
         display
             .save_header_file("/tmp/eink.h")
             .expect("failed to render");
