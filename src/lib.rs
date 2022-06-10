@@ -9,14 +9,8 @@ use embedded_graphics::{
     primitives::{Circle, Line, PrimitiveStyleBuilder},
     text::{Baseline, Text, TextStyleBuilder},
 };
-use epd_waveshare::{
-    color::*,
-    epd4in2::{Display4in2, Epd4in2},
-    graphics::DisplayRotation,
-    prelude::*,
-};
+use epd_waveshare::{color::*, epd4in2::Display4in2, graphics::DisplayRotation, prelude::*};
 use header_file::write_header_buffer;
-use ppm::write_ppm_buffer;
 
 mod header_file;
 mod ppm;
