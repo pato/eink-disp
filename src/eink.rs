@@ -5,7 +5,7 @@ use std::{
 
 use embedded_graphics::{
     mono_font::{
-        ascii::{FONT_10X20, FONT_6X9},
+        ascii::{FONT_10X20, FONT_6X9, FONT_8X13},
         MonoTextStyle,
     },
     pixelcolor::BinaryColor,
@@ -81,6 +81,11 @@ impl<D: DrawTarget<Color = BinaryColor>> EinkDisplay<D> {
 
     pub fn draw_small_text(&mut self, text: &str, x: i32, y: i32, centered: bool) {
         let style = MonoTextStyle::new(&FONT_6X9, self.white);
+        self.draw_text(text, x, y, centered, style)
+    }
+
+    pub fn draw_medium_text(&mut self, text: &str, x: i32, y: i32, centered: bool) {
+        let style = MonoTextStyle::new(&FONT_8X13, self.white);
         self.draw_text(text, x, y, centered, style)
     }
 

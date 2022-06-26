@@ -70,8 +70,6 @@ pub async fn draw_last_qualifying_results<D: DrawTarget<Color = BinaryColor>>(
     draw_last_qualifying_results_fetched(eink, race).await
 }
 
-const LINE: &str = "                                                                                                       ";
-
 async fn draw_last_qualifying_results_fetched<D: DrawTarget<Color = BinaryColor>>(
     eink: &mut EinkDisplay<D>,
     race: &Race,
@@ -81,21 +79,21 @@ async fn draw_last_qualifying_results_fetched<D: DrawTarget<Color = BinaryColor>
         .as_deref()
         .ok_or(eyre!("Missing qualifying results!"))?;
 
-    let mut iter = quali.iter();
-    let mut y = 50;
-
-    let pole_position = iter.next().ok_or(eyre!("Missing pole position"))?;
-    let pole = format_pole_position(pole_position);
-    eink.draw_big_text(&pole, 200, y, true);
-    y += 25; // 20 for font, 5 padding
+    let big_positions = 3;
+    let mut y = 20;
 
     let mut positions = String::new();
-    for position in iter {
+    for position in quali.iter().take(big_positions) {
+        positions.push_str(&format_qualifying_position(position));
+    }
+    eink.draw_big_text(&positions, 0, y, false);
+    y += 60; // 3 * 20 for font
+
+    let mut positions = String::new();
+    for position in quali.iter().skip(big_positions) {
         positions.push_str(&format_qualifying_position(position))
     }
-    positions.push('\n');
-    positions.push_str(LINE);
-    eink.draw_small_text(&positions, 50, y, false);
+    eink.draw_medium_text(&positions, 5, y, false);
 
     Ok(())
 }
@@ -109,20 +107,6 @@ fn format_driver_name(driver: &Driver) -> String {
     format!("{} {}", first_name, last_name)
 }
 
-fn format_pole_position(position: &QualifyingResult) -> String {
-    let driver_name = format_driver_name(&position.driver);
-    let time = position
-        .q3
-        .as_deref()
-        .or(position.q2.as_deref())
-        .or(position.q1.as_deref())
-        .unwrap_or("N/A");
-    format!(
-        "{}. {} {}  {}\n",
-        position.position, driver_name, time, &position.constructor.name,
-    )
-}
-
 fn format_qualifying_position(position: &QualifyingResult) -> String {
     let driver_name = format_driver_name(&position.driver);
     let time = position
@@ -132,7 +116,7 @@ fn format_qualifying_position(position: &QualifyingResult) -> String {
         .or(position.q1.as_deref())
         .unwrap_or("N/A");
     format!(
-        "{:2}. {:18} {:8}  {}\n",
+        "{:2}. {:16} {:8}  {}\n",
         position.position, driver_name, time, &position.constructor.name,
     )
 }

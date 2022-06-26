@@ -1,7 +1,4 @@
-use eink_disp::{
-    f1::{draw_last_qualifying_results, draw_next_race},
-    EinkDisplay,
-};
+use eink_disp::{f1::draw_last_qualifying_results, EinkDisplay};
 use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, Window,
