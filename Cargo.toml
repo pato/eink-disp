@@ -8,7 +8,7 @@ embedded-graphics = "0.7.1"
 embedded-graphics-simulator = "0.3.0"
 epd-waveshare = "0.5.0"
 smallvec = "1.8.0"
-eargast-rs = "0.1.0"
+ergast-rs = "0.1.0"
 eyre = "0.6.8"
 
 [dev-dependencies]
