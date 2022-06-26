@@ -5,10 +5,11 @@ use embedded_graphics::{
     primitives::{Circle, PrimitiveStyle, Rectangle},
 };
 use ergast_rs::{
-    apis::race_table::{QualifyingResult, Race},
+    apis::race_table::{Driver, QualifyingResult, Race},
     Ergast,
 };
 use eyre::{eyre, Result};
+use unidecode::unidecode;
 
 pub async fn draw_next_race<D: DrawTarget<Color = BinaryColor>>(
     eink: &mut EinkDisplay<D>,
@@ -99,11 +100,17 @@ async fn draw_last_qualifying_results_fetched<D: DrawTarget<Color = BinaryColor>
     Ok(())
 }
 
+fn format_driver_name(driver: &Driver) -> String {
+    // Since we can only render ASCII values, decode the unicode characters to their closest ASCII
+    // counterpart.
+    let first_name = unidecode(&driver.given_name);
+    let last_name = unidecode(&driver.family_name);
+
+    format!("{} {}", first_name, last_name)
+}
+
 fn format_pole_position(position: &QualifyingResult) -> String {
-    let driver_name = format!(
-        "{} {}",
-        &position.driver.given_name, &position.driver.family_name
-    );
+    let driver_name = format_driver_name(&position.driver);
     let time = position
         .q3
         .as_deref()
@@ -117,10 +124,7 @@ fn format_pole_position(position: &QualifyingResult) -> String {
 }
 
 fn format_qualifying_position(position: &QualifyingResult) -> String {
-    let driver_name = format!(
-        "{} {}",
-        &position.driver.given_name, &position.driver.family_name
-    );
+    let driver_name = format_driver_name(&position.driver);
     let time = position
         .q3
         .as_deref()
