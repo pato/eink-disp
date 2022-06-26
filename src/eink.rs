@@ -44,6 +44,12 @@ impl EinkDisplay<Display4in2> {
 
         Ok(())
     }
+
+    pub fn header_definition(&self) -> Result<Vec<u8>> {
+        let mut buff = Vec::with_capacity(1024 * 1024); // 1 MB
+        write_header_buffer(self.disp.buffer(), &mut buff)?;
+        Ok(buff)
+    }
 }
 
 impl Default for EinkDisplay<Display4in2> {
