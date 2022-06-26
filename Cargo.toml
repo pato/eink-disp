@@ -7,8 +7,8 @@ edition = "2021"
 embedded-graphics = "0.7.1"
 embedded-graphics-simulator = "0.3.0"
 epd-waveshare = "0.5.0"
-#ergast-rs = "0.2.0"
-ergast-rs = { version = "*", path = "../ergast-rs/" }
+ergast-rs = "0.2.1"
+#ergast-rs = { version = "*", path = "../ergast-rs/" }
 eyre = "0.6.8"
 smallvec = "1.8.0"
 tokio = { version = "1", features = ["full"], optional = true }
