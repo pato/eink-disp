@@ -277,8 +277,6 @@ dependencies = [
 [[package]]
 name = "ergast-rs"
 version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8ca940f7d4bdd0e7db30c9cef4b7157b8a852f764b7e74c3062eca54980dc84"
 dependencies = [
  "eyre",
  "reqwest",
