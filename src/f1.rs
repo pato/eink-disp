@@ -4,7 +4,10 @@ use embedded_graphics::{
     prelude::*,
     primitives::{Circle, PrimitiveStyle, Rectangle},
 };
-use ergast_rs::{apis::race_table::Race, Ergast};
+use ergast_rs::{
+    apis::race_table::{QualifyingResult, Race},
+    Ergast,
+};
 use eyre::{eyre, Result};
 
 pub async fn draw_next_race<D: DrawTarget<Color = BinaryColor>>(
@@ -51,4 +54,81 @@ async fn draw_next_race_fetched<D: DrawTarget<Color = BinaryColor>>(
     eink.draw_small_text(&second_line, 200, 190, true);
 
     Ok(())
+}
+
+pub async fn draw_last_qualifying_results<D: DrawTarget<Color = BinaryColor>>(
+    eink: &mut EinkDisplay<D>,
+) -> Result<()> {
+    let ergast = Ergast::new()?;
+    let quali = ergast.qualifying_results(None, None).await?;
+    let race = quali
+        .races
+        .first()
+        .ok_or(eyre!("No quali results fetched!"))?;
+
+    draw_last_qualifying_results_fetched(eink, race).await
+}
+
+const LINE: &str = "                                                                                                       ";
+
+async fn draw_last_qualifying_results_fetched<D: DrawTarget<Color = BinaryColor>>(
+    eink: &mut EinkDisplay<D>,
+    race: &Race,
+) -> Result<()> {
+    let quali = race
+        .qualifying_results
+        .as_deref()
+        .ok_or(eyre!("Missing qualifying results!"))?;
+
+    let mut iter = quali.iter();
+    let mut y = 50;
+
+    let pole_position = iter.next().ok_or(eyre!("Missing pole position"))?;
+    let pole = format_pole_position(pole_position);
+    eink.draw_big_text(&pole, 200, y, true);
+    y += 25; // 20 for font, 5 padding
+
+    let mut positions = String::new();
+    for position in iter {
+        positions.push_str(&format_qualifying_position(position))
+    }
+    positions.push('\n');
+    positions.push_str(LINE);
+    eink.draw_small_text(&positions, 50, y, false);
+
+    Ok(())
+}
+
+fn format_pole_position(position: &QualifyingResult) -> String {
+    let driver_name = format!(
+        "{} {}",
+        &position.driver.given_name, &position.driver.family_name
+    );
+    let time = position
+        .q3
+        .as_deref()
+        .or(position.q2.as_deref())
+        .or(position.q1.as_deref())
+        .unwrap_or("N/A");
+    format!(
+        "{}. {} {}  {}\n",
+        position.position, driver_name, time, &position.constructor.name,
+    )
+}
+
+fn format_qualifying_position(position: &QualifyingResult) -> String {
+    let driver_name = format!(
+        "{} {}",
+        &position.driver.given_name, &position.driver.family_name
+    );
+    let time = position
+        .q3
+        .as_deref()
+        .or(position.q2.as_deref())
+        .or(position.q1.as_deref())
+        .unwrap_or("N/A");
+    format!(
+        "{:2}. {:18} {:8}  {}\n",
+        position.position, driver_name, time, &position.constructor.name,
+    )
 }

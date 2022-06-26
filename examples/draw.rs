@@ -1,4 +1,7 @@
-use eink_disp::{f1::draw_next_race, EinkDisplay};
+use eink_disp::{
+    f1::{draw_last_qualifying_results, draw_next_race},
+    EinkDisplay,
+};
 use embedded_graphics::{pixelcolor::BinaryColor, prelude::*};
 use embedded_graphics_simulator::{
     BinaryColorTheme, OutputSettingsBuilder, SimulatorDisplay, Window,
@@ -11,7 +14,8 @@ async fn main() -> Result<()> {
 
     let mut eink = EinkDisplay::new_with_display(display);
 
-    draw_next_race(&mut eink).await?;
+    // draw_next_race(&mut eink).await?;
+    draw_last_qualifying_results(&mut eink).await?;
 
     let output_settings = OutputSettingsBuilder::new()
         .theme(BinaryColorTheme::OledWhite)
