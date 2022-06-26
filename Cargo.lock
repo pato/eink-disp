@@ -260,11 +260,13 @@ dependencies = [
 name = "eink-disp"
 version = "0.1.0"
 dependencies = [
+ "bytes",
  "embedded-graphics",
  "embedded-graphics-simulator",
  "epd-waveshare",
  "ergast-rs",
  "eyre",
+ "hyper",
  "smallvec",
  "tokio",
  "unidecode",
@@ -344,7 +346,7 @@ dependencies = [
 
 [[package]]
 name = "ergast-rs"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "eyre",
  "reqwest",

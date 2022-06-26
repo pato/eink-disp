@@ -13,7 +13,7 @@ use embedded_graphics::{
     text::{Alignment, Text},
 };
 
-use epd_waveshare::{color::*, epd4in2::Display4in2, graphics::DisplayRotation, prelude::*};
+use epd_waveshare::{epd4in2::Display4in2, graphics::DisplayRotation, prelude::*};
 use eyre::Result;
 
 use crate::header_file::write_header_buffer;
@@ -21,15 +21,21 @@ use crate::header_file::write_header_buffer;
 /// Based on the GDEW042T2 e-Paper from Dalian Good Display Co., Ltd.: www.good-display.com
 pub struct EinkDisplay<D: DrawTarget = Display4in2> {
     disp: D,
+    white: BinaryColor,
+    black: BinaryColor,
 }
 
 impl EinkDisplay<Display4in2> {
     pub fn new() -> Self {
         let mut disp = Display4in2::default();
         disp.set_rotation(DisplayRotation::Rotate0);
-        disp.clear(White).unwrap();
 
-        Self::new_with_display(disp)
+        // the e-ink display reverses the colors, so white is off
+        let white = BinaryColor::Off;
+        let black = BinaryColor::On;
+        disp.clear(black).unwrap();
+
+        Self::new_with_display(disp, white, black)
     }
 
     pub fn save_header_file(&self, file_name: &str) -> Result<()> {
@@ -50,6 +56,10 @@ impl EinkDisplay<Display4in2> {
         write_header_buffer(self.disp.buffer(), &mut buff)?;
         Ok(buff)
     }
+
+    pub fn raw_bytes(&self) -> &[u8] {
+        self.disp.buffer()
+    }
 }
 
 impl Default for EinkDisplay<Display4in2> {
@@ -59,23 +69,23 @@ impl Default for EinkDisplay<Display4in2> {
 }
 
 impl<D: DrawTarget<Color = BinaryColor>> EinkDisplay<D> {
-    pub fn new_with_display(disp: D) -> Self {
-        Self { disp }
+    pub fn new_with_display(disp: D, white: BinaryColor, black: BinaryColor) -> Self {
+        Self { disp, white, black }
     }
 
     pub fn clear(&mut self) {
-        if self.disp.clear(Black).is_err() {
+        if self.disp.clear(self.black).is_err() {
             panic!("failed to clear")
         }
     }
 
     pub fn draw_small_text(&mut self, text: &str, x: i32, y: i32, centered: bool) {
-        let style = MonoTextStyle::new(&FONT_6X9, BinaryColor::On);
+        let style = MonoTextStyle::new(&FONT_6X9, self.white);
         self.draw_text(text, x, y, centered, style)
     }
 
     pub fn draw_big_text(&mut self, text: &str, x: i32, y: i32, centered: bool) {
-        let style = MonoTextStyle::new(&FONT_10X20, BinaryColor::On);
+        let style = MonoTextStyle::new(&FONT_10X20, self.white);
         self.draw_text(text, x, y, centered, style)
     }
 
@@ -103,8 +113,8 @@ impl<D: DrawTarget<Color = BinaryColor>> EinkDisplay<D> {
     // fn draw_text(&mut self, text: &str, x: i32, y: i32) {
     //     let style = MonoTextStyleBuilder::new()
     //         .font(&embedded_graphics::mono_font::ascii::FONT_10X20)
-    //         .text_color(White)
-    //         .background_color(Black)
+    //         .text_color(WHITE)
+    //         .background_color(BLACK)
     //         .build();
 
     //     let text_style = TextStyleBuilder::new().baseline(Baseline::Top).build();

@@ -12,13 +12,13 @@ use eyre::Result;
 async fn main() -> Result<()> {
     let display = SimulatorDisplay::<BinaryColor>::new(Size::new(400, 300));
 
-    let mut eink = EinkDisplay::new_with_display(display);
+    let mut eink = EinkDisplay::new_with_display(display, BinaryColor::On, BinaryColor::Off);
 
     // draw_next_race(&mut eink).await?;
     draw_last_qualifying_results(&mut eink).await?;
 
     let output_settings = OutputSettingsBuilder::new()
-        .theme(BinaryColorTheme::OledWhite)
+        .theme(BinaryColorTheme::LcdWhite)
         .build();
     Window::new("E-Ink Simulator", &output_settings).show_static(eink.raw_display());
 
