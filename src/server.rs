@@ -27,12 +27,17 @@ impl EinkServer {
         let next_race = warp::path!("next_race").and_then(Self::next_race);
         let next_race_header = warp::path!("next_race_header").and_then(Self::next_race_header);
         let quali_results = warp::path!("quali_results").and_then(Self::quali_results);
+        let alive = warp::path!("alive").and_then(Self::alive);
 
         println!("EinkServer about listen on: {:?}", self.addr);
-        let route = warp::get().and(next_race.or(quali_results).or(next_race_header));
+        let route = warp::get().and(next_race.or(quali_results).or(next_race_header).or(alive));
         warp::serve(route).run(self.addr).await;
 
         Ok(())
+    }
+
+    async fn alive() -> Result<impl warp::Reply, Infallible> {
+        Ok(Response::builder().body("Ok").unwrap())
     }
 
     async fn next_race_header() -> Result<impl warp::Reply, Infallible> {
